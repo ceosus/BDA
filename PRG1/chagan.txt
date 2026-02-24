@@ -1,0 +1,92 @@
+===== SYSTEM UPDATE =====
+sudo apt update
+sudo apt upgrade -y
+
+===== INSTALL JAVA 8 =====
+sudo apt install openjdk-8-jdk -y
+java -version
+readlink -f /usr/bin/java
+
+===== SET JAVA_HOME =====
+nano ~/.bashrc
+
+Add:
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
+Then:
+
+source ~/.bashrc
+echo $JAVA_HOME
+
+===== DOWNLOAD HADOOP =====
+wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+tar -xvzf hadoop-3.3.6.tar.gz
+sudo mv hadoop-3.3.6 /usr/local/hadoop
+
+===== FIX PERMISSIONS (CRITICAL) =====
+sudo chown -R $USER:$USER /usr/local/hadoop
+
+Verify:
+
+ls -ld /usr/local/hadoop
+
+Owner must be your username.
+
+===== SET HADOOP ENV VARIABLES =====
+nano ~/.bashrc
+
+Add:
+
+export HADOOP_HOME=/usr/local/hadoop
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+Then:
+
+source ~/.bashrc
+echo $HADOOP_HOME
+
+===== CONFIGURE HADOOP =====
+cd $HADOOP_HOME/etc/hadoop
+Edit hadoop-env.sh
+nano hadoop-env.sh
+
+Set:
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+nano core-site.xml
+
+nano hdfs-site.xml
+
+nano mapred-site.xml
+
+nano yarn-site.xml
+
+===== SETUP PASSWORDLESS SSH =====
+ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+ssh localhost
+
+===== FORMAT NAMENODE =====
+hdfs namenode -format
+
+===== START HADOOP =====
+start-dfs.sh
+start-yarn.sh
+
+===== VERIFY =====
+jps
+
+===== TEST HDFS =====
+hdfs dfs -ls /
+hdfs dfs -mkdir /test
+hdfs dfs -ls /
