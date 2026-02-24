@@ -1,0 +1,31 @@
+start-dfs.sh
+start-yarn.sh
+jps
+
+#if no namemdoe:
+hdfs namemdoe -format
+
+mkdir hadoop_lab
+cd hadoop_lab
+
+nano temperature.txt
+
+hdfs dfs -mkdir -p /maxtemp/input
+
+hdfs dfs -put -f temperature.txt /maxtemp/input
+
+hdfs dfs -ls /maxtemp/input
+
+nano MaxTemperature.java
+
+javac -classpath `hadoop classpath` MaxTemperature.java
+
+jar cf maxtemp.jar MaxTemperature*.class
+
+ls
+
+hdfs dfs -rm -r /maxtemp/output
+
+hadoop jar maxtemp.jar MaxTemperature /maxtemp/input /maxtemp/output
+
+hdfs dfs -cat /maxtemp/output/part-r-00000
