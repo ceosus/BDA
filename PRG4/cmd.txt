@@ -1,0 +1,28 @@
+start-dfs.sh
+start-yarn.sh
+jps
+
+ hdfs namenode -format
+
+mkdir -p grade_lab
+cd grade_lab
+
+javac -classpath $(hadoop classpath) -d . GradeMR.java
+
+jar -cvf grade.jar *.class
+
+hdfs dfs -mkdir -p /grade/input
+
+nano students.txt
+
+hdfs dfs -put -f students.txt /grade/input
+
+hdfs dfs -ls /grade/input
+
+hdfs dfs -rm -r -f /grade/output
+
+hadoop jar grade.jar GradeMR /grade/input /grade/output
+
+hdfs dfs -ls /grade/output
+
+hdfs dfs -cat /grade/output/part-r-00000
