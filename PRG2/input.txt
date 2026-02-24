@@ -1,0 +1,3 @@
+hadoop is big data framework
+hadoop processes big data
+big data is powerful
