@@ -15,8 +15,10 @@ sudo service ssh start
 cd ~
 wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
 tar -xvzf hadoop-3.3.6.tar.gz
+sudo rm -rf /usr/local/hadoop
 sudo mv hadoop-3.3.6 /usr/local/hadoop
 sudo chown -R $USER:$USER /usr/local/hadoop
+ls /usr/local
 
 nano ~/.bashrc
 export HADOOP_HOME=/usr/local/hadoop
@@ -38,7 +40,6 @@ mkdir -p ~/hadoopdata/hdfs/datanode
 
 
 cd /usr/local/hadoop/etc/hadoop
-
 nano hadoop-env.sh
 
 Find:
@@ -56,6 +57,9 @@ sudo rm -f yarn-site.xml
 sudo cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
 or
 cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
+chown $USER:$USER *.xml
+ls
+
 
 nano core-site.xml
 nano hdfs-site.xml
