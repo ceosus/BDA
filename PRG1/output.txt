@@ -1,79 +1,236 @@
+=========================================
+HADOOP 3.3.6 INSTALLATION ON WSL UBUNTU
+=========================================
+
+NOTE:
+This guide is ONLY for WSL Ubuntu (not VirtualBox).
+
+-----------------------------------------
+STEP 1: Open WSL Ubuntu
+-----------------------------------------
+Open Ubuntu from Windows Start Menu.
+
+Check terminal works:
+ls
+
+
+-----------------------------------------
+STEP 2: Update System
+-----------------------------------------
 sudo apt update
 sudo apt upgrade -y
 
+
+-----------------------------------------
+STEP 3: Install Java (Required)
+-----------------------------------------
 sudo apt install openjdk-11-jdk -y
 java -version
 
+Set JAVA_HOME:
 echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc
 echo 'export PATH=$PATH:$JAVA_HOME/bin' >> ~/.bashrc
 source ~/.bashrc
+
+Check:
 echo $JAVA_HOME
 
+
+-----------------------------------------
+STEP 4: Install SSH (Required for Hadoop)
+-----------------------------------------
 sudo apt install openssh-server -y
 sudo service ssh start
 
+If systemctl works:
+sudo systemctl enable ssh
+
+
+-----------------------------------------
+STEP 5: Setup Passwordless SSH
+-----------------------------------------
+ssh-keygen -t rsa
+(Press ENTER for all prompts)
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+Test:
+ssh localhost
+(Type yes first time)
+
+Exit:
+exit
+
+
+-----------------------------------------
+STEP 6: Download Hadoop
+-----------------------------------------
 cd ~
 wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
 tar -xvzf hadoop-3.3.6.tar.gz
-sudo rm -rf /usr/local/hadoop
+
 sudo mv hadoop-3.3.6 /usr/local/hadoop
 sudo chown -R $USER:$USER /usr/local/hadoop
-ls /usr/local
 
+
+-----------------------------------------
+STEP 7: Set Hadoop Environment Variables
+-----------------------------------------
 nano ~/.bashrc
+
+Add at bottom:
+
 export HADOOP_HOME=/usr/local/hadoop
-export HADOOP_INSTALL=$HADOOP_HOME
-export HADOOP_MAPRED_HOME=$HADOOP_HOME
-export HADOOP_COMMON_HOME=$HADOOP_HOME
-export HADOOP_HDFS_HOME=$HADOOP_HOME
-export YARN_HOME=$HADOOP_HOME
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH
 export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
+Save and apply:
 source ~/.bashrc
-echo $HADOOP_HOME
 
-cd ~
+Check:
+hadoop version
+
+
+-----------------------------------------
+STEP 8: Configure Hadoop
+-----------------------------------------
+cd $HADOOP_HOME/etc/hadoop
+
+1) hadoop-env.sh
+----------------
+nano hadoop-env.sh
+
+Set:
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+
+2) core-site.xml
+----------------
+nano core-site.xml
+
+Paste:
+
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+
+3) hdfs-site.xml
+----------------
+nano hdfs-site.xml
+
+Paste:
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file://${user.home}/hadoopdata/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file://${user.home}/hadoopdata/hdfs/datanode</value>
+    </property>
+</configuration>
+
+
+4) mapred-site.xml
+------------------
+cp mapred-site.xml.template mapred-site.xml
+nano mapred-site.xml
+
+Paste:
+
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+</configuration>
+
+
+5) yarn-site.xml
+----------------
+nano yarn-site.xml
+
+Paste:
+
+<configuration>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+</configuration>
+
+
+-----------------------------------------
+STEP 9: Create HDFS Directories
+-----------------------------------------
 mkdir -p ~/hadoopdata/hdfs/namenode
 mkdir -p ~/hadoopdata/hdfs/datanode
 
 
-cd /usr/local/hadoop/etc/hadoop
-nano hadoop-env.sh
-
-Find:
-export JAVA_HOME=
-Replace with:
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-
-
-cd /usr/local/hadoop/etc/hadoop
-sudo rm -f core-site.xml
-sudo rm -f hdfs-site.xml
-sudo rm -f mapred-site.xml
-sudo rm -f yarn-site.xml
-
-sudo cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
-or
-cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
-chown $USER:$USER *.xml
-ls
-
-
-nano core-site.xml
-nano hdfs-site.xml
-cp mapred-site.xml.template mapred-site.xml
-nano mapred-site.xml
-nano yarn-site.xml
-
-ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-ssh localhost
-
+-----------------------------------------
+STEP 10: Format NameNode (Run ONLY Once)
+-----------------------------------------
 hdfs namenode -format
 
+You must see:
+Storage directory successfully formatted
+
+
+-----------------------------------------
+STEP 11: Start Hadoop
+-----------------------------------------
+sudo service ssh start
 start-dfs.sh
 start-yarn.sh
+
+
+-----------------------------------------
+STEP 12: Verify Installation
+-----------------------------------------
 jps
+
+You must see:
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+
+-----------------------------------------
+OPTIONAL: Web Interfaces
+-----------------------------------------
+HDFS:
+http://localhost:9870
+
+YARN:
+http://localhost:8088
+
+
+-----------------------------------------
+RESET COMMAND (If Errors Occur)
+-----------------------------------------
+stop-dfs.sh
+stop-yarn.sh
+rm -rf ~/hadoopdata
+mkdir -p ~/hadoopdata/hdfs/namenode
+mkdir -p ~/hadoopdata/hdfs/datanode
+hdfs namenode -format
+start-dfs.sh
+start-yarn.sh
+
+
+=========================================
+HADOOP IS NOW READY IN WSL UBUNTU
+=========================================
