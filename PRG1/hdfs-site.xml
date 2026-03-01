@@ -1,4 +1,16 @@
-<property>
-<name>dfs.replication</name>
-<value>1</value>
-</property>
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/YOUR_USERNAME/hadoopdata/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/YOUR_USERNAME/hadoopdata/hdfs/datanode</value>
+    </property>
+</configuration>
