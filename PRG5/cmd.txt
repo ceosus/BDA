@@ -19,7 +19,7 @@ hdfs dfs -ls /matrix/input
 
 hdfs dfs -rm -r -f /matrix/output
 
-hadoop jar matrix.jar MatrixMultiply /matrix/input /matrix/output
+hadoop jar matrix.jar MatrixMultiply /matrix/input /matrix/output 2 2
 
 hdfs dfs -ls /matrix/output
 
