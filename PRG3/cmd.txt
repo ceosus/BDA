@@ -3,7 +3,7 @@ start-yarn.sh
 jps
 
 #if no namemdoe:
-hdfs namemdoe -format
+hdfs namenode -format
 
 mkdir hadoop_lab
 cd hadoop_lab
