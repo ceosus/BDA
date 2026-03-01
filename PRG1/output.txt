@@ -48,6 +48,15 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 
 cd /usr/local/hadoop/etc/hadoop
+sudo rm -f core-site.xml
+sudo rm -f hdfs-site.xml
+sudo rm -f mapred-site.xml
+sudo rm -f yarn-site.xml
+
+sudo cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
+or
+cp ~/BDA/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
+
 nano core-site.xml
 nano hdfs-site.xml
 cp mapred-site.xml.template mapred-site.xml
