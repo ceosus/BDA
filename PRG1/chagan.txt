@@ -61,7 +61,16 @@ nano hadoop-env.sh
 Set:
 
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+-----------------------------------------------------
+cd /usr/local/hadoop/etc/hadoop
 
+ sudo rm core-site.xml
+sudo rm hdfs-site.xml
+sudo rm mapred-site.xml 2>/dev/null
+sudo rm yarn-site.xml
+
+sudo cp ~/PRG1/*.xml /usr/local/hadoop/etc/hadoop/
+----------------------------------------------------
 nano core-site.xml
 
 nano hdfs-site.xml
