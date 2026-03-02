@@ -1,0 +1,15 @@
+wsl --install -d Ubuntu
+
+If WSL Is Already Installed
+If you just want to install Ubuntu:
+wsl --list --online
+
+wsl --install -d Ubuntu-22.04
+
+🔄 After Installation
+Restart your system (if asked), then open Ubuntu from:
+Start Menu → Search Ubuntu
+
+It will ask you to create:
+Linux username
+Password
