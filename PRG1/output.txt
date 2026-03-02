@@ -102,7 +102,7 @@ cd $HADOOP_HOME/etc/hadoop
 nano hadoop-env.sh
 
 Set:
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 
 2) core-site.xml
